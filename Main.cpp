@@ -2,6 +2,9 @@
 #include <windows.h>
 #include <conio.h>
 
+//for rand() method
+#include <stdlib.h>
+
 const HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE);
 
 #define UP 72
@@ -24,6 +27,7 @@ void hideCursor()
 {
     CONSOLE_CURSOR_INFO cci;
     cci.bVisible = false;
+    cci.dwSize = 10;
     SetConsoleCursorInfo(hCon, &cci);
 }
 
@@ -73,14 +77,21 @@ class SpaceCraft
     int x, y;
     int hearts;
 
+    void dead();
+    void remove();
+
 public:
     SpaceCraft(int _x, int _y, int hearts);
-    void paint();
-    void remove();
+    SpaceCraft();
     void move();
     void paintHearts();
-    void dead();
+    void decreaseHearts();
+    void paint();
+    int getX();
+    int getY();
 };
+
+SpaceCraft::SpaceCraft() {}
 
 SpaceCraft::SpaceCraft(int _x, int _y, int _hearts)
 {
@@ -89,16 +100,21 @@ SpaceCraft::SpaceCraft(int _x, int _y, int _hearts)
     hearts = _hearts;
 }
 
+
+int SpaceCraft::getX() { return x; }
+
+int SpaceCraft::getY() { return y; }
+
 void SpaceCraft::dead()
 {
 
     remove();
     gotoxy(x, y);
-    printf("   **   ");
+    printf("  **   ");
     gotoxy(x, y + 1);
-    printf("  ****");
+    printf(" ****");
     gotoxy(x, y + 2);
-    printf("   **");
+    printf("  **");
     Sleep(200);
 
     gotoxy(x, y);
@@ -108,8 +124,6 @@ void SpaceCraft::dead()
     gotoxy(x, y + 2);
     printf(" * ** * ");
     Sleep(200);
-    
-    clean();
     gameOver = true;
 }
 
@@ -139,53 +153,105 @@ void SpaceCraft::remove()
 
 void SpaceCraft::move()
 {
-    char pressed = getch();
-    remove();
-    switch (pressed)
+    if (kbhit())
     {
-    case LEFT:
-        if (x > 2)
-            x--;
-        break;
-    case RIGHT:
-        if (x < 110)
-            x++;
-        break;
-    case UP:
-        if (y > 2)
-            y--;
-        break;
-    case DOWN:
-        if (y < 27)
-            y++;
-        break;
-
-    case 'e':
-        hearts--;
-        if (hearts == 0)
+        char pressed = getch();
+        remove();
+        switch (pressed)
         {
-            dead();
-            return;
+        case LEFT:
+            if (x > 2)
+                x--;
+            break;
+        case RIGHT:
+            if (x < 110)
+                x++;
+            break;
+        case UP:
+            if (y > 2)
+                y--;
+            break;
+        case DOWN:
+            if (y < 27)
+                y++;
+            break;
         }
-        break;
+        paint();
     }
-
-    paint();
-    paintHearts();
 }
 
 void SpaceCraft::paintHearts()
 {
 
-    for (int i = 0; i < hearts; i++)
+    int i;
+    for (i = 0; i < hearts; i++)
     {
         gotoxy(117, 2 + i);
         printf("%c", 3);
     }
-    for (int i = 4; i >= hearts; i--)
+    for (int j = i; j < 5; j++)
     {
         gotoxy(117, 2 + i);
-        printf(" ");
+        printf("   ");
+    }
+}
+void SpaceCraft::decreaseHearts()
+{
+    SpaceCraft::hearts--;
+    paintHearts();
+    if (hearts == 0)
+    {
+        dead();
+        clean();
+    }
+}
+
+class Asteroid
+{
+    int x, y;
+
+    void reset()
+    {
+        x = rand() % 107 + 4;
+        y = 4;
+    }
+
+public:
+    Asteroid();
+    void paint();
+    void move();
+    void collision(class SpaceCraft &sc);
+};
+
+Asteroid::Asteroid()
+{
+    x = rand() % 107 + 4;
+    y = rand() % 6 + 4;
+}
+void Asteroid::paint()
+{
+    gotoxy(x, y);
+    printf("%c", 184);
+}
+void Asteroid::move()
+{
+    gotoxy(x, y);
+    printf(" ");
+    y++;
+    if (y > 29)
+    {
+        reset();
+    }
+    Asteroid::paint();
+}
+
+void Asteroid::collision(class SpaceCraft &sc)
+{
+    if (x >= sc.getX() + 1 && x <= sc.getX()+3 && (y == sc.getY() + 1 || y == sc.getY() + 2))
+    {
+        gotoxy(sc.getX(), sc.getY());
+        sc.decreaseHearts();
+        reset();
     }
 }
 
@@ -194,15 +260,40 @@ main()
     hideCursor();
     paintLimits();
 
-    SpaceCraft sc = SpaceCraft(55, 27, 5);
+    SpaceCraft sc = SpaceCraft(55, 27, 4);
+
+    Asteroid at = Asteroid();
+    Asteroid at1 = Asteroid();
+    Asteroid at2 = Asteroid();
+    Asteroid at3 = Asteroid();
+    Asteroid at4 = Asteroid();
 
     sc.paint();
     sc.paintHearts();
 
     while (!gameOver)
     {
+
         sc.move();
+
+        at.move();
+        at.collision(sc);
+
+        at1.move();
+        at1.collision(sc);
+
+        at2.move();
+        at2.collision(sc);
+
+        at3.move();
+        at3.collision(sc);
+
+        at4.move();
+        at4.collision(sc);
+
+        Sleep(20);
     }
+    clean();
     _getch();
 
     return 0;
