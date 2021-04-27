@@ -9,6 +9,8 @@ const HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE);
 #define LEFT 75
 #define RIGHT 77
 
+bool gameOver = false;
+
 void gotoxy(int x, int y)
 {
     COORD dwPos;
@@ -57,6 +59,15 @@ void paintLimits()
     printf("%c", 188);
 }
 
+void clean()
+{
+    for (int i = 1; i <= 30; i++)
+    {
+        gotoxy(1, i);
+        printf("%*c", 117, 32);
+    }
+}
+
 class SpaceCraft
 {
     int x, y;
@@ -68,7 +79,39 @@ public:
     void remove();
     void move();
     void paintHearts();
+    void dead();
 };
+
+SpaceCraft::SpaceCraft(int _x, int _y, int _hearts)
+{
+    x = _x;
+    y = _y;
+    hearts = _hearts;
+}
+
+void SpaceCraft::dead()
+{
+
+    remove();
+    gotoxy(x, y);
+    printf("   **   ");
+    gotoxy(x, y + 1);
+    printf("  ****");
+    gotoxy(x, y + 2);
+    printf("   **");
+    Sleep(200);
+
+    gotoxy(x, y);
+    printf(" * ** * ");
+    gotoxy(x, y + 1);
+    printf("  ****");
+    gotoxy(x, y + 2);
+    printf(" * ** * ");
+    Sleep(200);
+    
+    clean();
+    gameOver = true;
+}
 
 void SpaceCraft::paint()
 {
@@ -116,6 +159,15 @@ void SpaceCraft::move()
         if (y < 27)
             y++;
         break;
+
+    case 'e':
+        hearts--;
+        if (hearts == 0)
+        {
+            dead();
+            return;
+        }
+        break;
     }
 
     paint();
@@ -130,13 +182,11 @@ void SpaceCraft::paintHearts()
         gotoxy(117, 2 + i);
         printf("%c", 3);
     }
-}
-
-SpaceCraft::SpaceCraft(int _x, int _y, int _hearts)
-{
-    x = _x;
-    y = _y;
-    hearts = _hearts;
+    for (int i = 4; i >= hearts; i--)
+    {
+        gotoxy(117, 2 + i);
+        printf(" ");
+    }
 }
 
 main()
@@ -148,7 +198,6 @@ main()
 
     sc.paint();
     sc.paintHearts();
-    bool gameOver = false;
 
     while (!gameOver)
     {
