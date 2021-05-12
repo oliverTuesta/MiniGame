@@ -20,7 +20,7 @@ public:
 Asteroid::Asteroid()
 {
     x = rand() % 107 + 4;
-    y = rand() % 6 + 4;
+    y = rand() % 10 + 4;
 }
 void Asteroid::paint()
 {

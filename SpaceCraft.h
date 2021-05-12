@@ -92,11 +92,11 @@ void SpaceCraft::move()
         {
         case LEFT:
             if (x > 2)
-                x--;
+                x-=2;
             break;
         case RIGHT:
             if (x < 110)
-                x++;
+                x+=2;
             break;
         case UP:
             if (y > 2)

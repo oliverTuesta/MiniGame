@@ -15,62 +15,25 @@ bool gameOver = false;
 #include "SpaceCraft.h"
 #include "Asteroid.h"
 #include "Bullet.h"
+#include "Game.h"
 
-Terminal t = Terminal();
-
-void paintLimits()
-{
-    //horizontal
-    for (int i = 2; i < 115; i++)
-    {
-        t.gotoxy(i, 1);
-        printf("%c", 205);
-        t.gotoxy(i, 30);
-        printf("%c", 205);
-    }
-    //vertical
-    for (int i = 2; i < 30; i++)
-    {
-        t.gotoxy(1, i);
-        printf("%c", 186);
-        t.gotoxy(115, i);
-        printf("%c", 186);
-    }
-
-    t.gotoxy(1, 1);
-    printf("%c", 201);
-
-    t.gotoxy(1, 30);
-    printf("%c", 200);
-
-    t.gotoxy(115, 1);
-    printf("%c", 187);
-
-    t.gotoxy(115, 30);
-    printf("%c", 188);
-}
-
-void clean()
-{
-    for (int i = 1; i <= 30; i++)
-    {
-        t.gotoxy(1, i);
-        printf("%*c", 117, 32);
-    }
-}
+Terminal t;
+Game g;
 
 main()
 {
     t.hideCursor();
-    paintLimits();
+    g.paintLimits();
 
     SpaceCraft sc = SpaceCraft(55, 27);
 
-    Asteroid at = Asteroid();
-    Asteroid at1 = Asteroid();
-    Asteroid at2 = Asteroid();
-    Asteroid at3 = Asteroid();
-    Asteroid at4 = Asteroid();
+    list<Asteroid *> Asteroids;
+    list<Asteroid *>::iterator itA;
+
+    for (int i = 0; i < 3; i++)
+    {
+        Asteroids.push_back(new Asteroid());
+    }
 
     list<Bullet *> B;
     list<Bullet *>::iterator it;
@@ -90,31 +53,26 @@ main()
         {
             if (!(*it)->move())
             {
-                delete (*it);
                 it = B.erase(it);
             }
         }
 
         sc.move();
 
-        at.move();
-        at.collision(sc);
-
-        at1.move();
-        at1.collision(sc);
-
-        at2.move();
-        at2.collision(sc);
-
-        at3.move();
-        at3.collision(sc);
-
-        at4.move();
-        at4.collision(sc);
+        for (itA = Asteroids.begin(); itA != Asteroids.end(); itA++)
+        {
+            (*itA)->move();
+            (*itA)->collision(sc);
+        }
 
         Sleep(20);
+        if (g.levelUp())
+            Asteroids.push_back(new Asteroid());
     }
-    clean();
+    g.gameOver();
+    _getch();
+    _getch();
+    _getch();
     _getch();
 
     return 0;
