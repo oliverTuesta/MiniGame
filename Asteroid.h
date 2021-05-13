@@ -7,8 +7,6 @@ class Asteroid
     void reset()
     {
         x = rand() % 107 + 4;
-        if (x % 2 == 0)
-            x++;
         y = 4;
     }
 
@@ -24,8 +22,6 @@ public:
 Asteroid::Asteroid()
 {
     x = rand() % 105 + 4;
-    if (x % 2 == 0)
-        x++;
     y = rand() % 10 + 4;
 }
 void Asteroid::paint()
@@ -52,8 +48,8 @@ void Asteroid::collision(class SpaceCraft &sc)
         t.gotoxy(sc.getX(), sc.getY());
         if (sc.isDead())
             gameOver = true;
-        else
-            sc.paint();
         reset();
     }
+    if (!gameOver)
+        sc.paint();
 }

@@ -63,11 +63,7 @@ void Game::gameOver()
 
 void Game::clean()
 {
-    for (int i = 1; i <= 30; i++)
-    {
-        t.gotoxy(1, i);
-        printf("%*c", 117, 32);
-    }
+    system("cls");
 }
 
 boolean Game::levelUp()
