@@ -34,9 +34,9 @@ main()
     {
         Asteroids.push_back(new Asteroid());
     }
-
-    list<Bullet *> B;
-    list<Bullet *>::iterator it;
+    g.clean();
+    list<Bullet *> Bullets;
+    list<Bullet *>::iterator itB;
     sc.paint();
     sc.paintHearts();
 
@@ -45,15 +45,16 @@ main()
         if (kbhit())
         {
             char key = getch();
-            if (key == 'c')
-                B.push_back(new Bullet(sc.getX() + 2, sc.getY() - 1));
+            if (key == 'c' && Bullets.size() < 2)
+                Bullets.push_back(new Bullet(sc.getX() + 2, sc.getY() - 1));
         }
 
-        for (it = B.begin(); it != B.end(); it++)
+        for (itB = Bullets.begin(); itB != Bullets.end(); itB++)
         {
-            if (!(*it)->move())
+            if (!(*itB)->move())
             {
-                it = B.erase(it);
+                delete (*itB);
+                itB = Bullets.erase(itB);
             }
         }
 
@@ -66,6 +67,30 @@ main()
         }
 
         Sleep(20);
+        int p = 1;
+
+        for (itA = Asteroids.begin(); itA != Asteroids.end(); itA++)
+        {
+            for (itB = Bullets.begin(); itB != Bullets.end(); itB++)
+            {
+                if ((*itA)->getX() == (*itB)->getX() &&
+                    ((*itA)->getY() == (*itB)->getY() ||
+                     (*itA)->getY() + 1 == (*itB)->getY()))
+                {
+                    t.gotoxy((*itA)->getX(), (*itA)->getY());
+                    printf(" ");
+                    delete (*itA);
+                    itA = Asteroids.erase(itA);
+                    g.addPoints();
+
+                    t.gotoxy((*itB)->getX(), (*itB)->getY());
+                    printf(" ");
+                    delete (*itB);
+                    itB = Bullets.erase(itB);
+                }
+            }
+        }
+
         if (g.levelUp())
             Asteroids.push_back(new Asteroid());
     }

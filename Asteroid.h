@@ -7,6 +7,8 @@ class Asteroid
     void reset()
     {
         x = rand() % 107 + 4;
+        if (x % 2 == 0)
+            x++;
         y = 4;
     }
 
@@ -15,11 +17,15 @@ public:
     void paint();
     void move();
     void collision(class SpaceCraft &sc);
+    int getX() { return x; }
+    int getY() { return y; }
 };
 
 Asteroid::Asteroid()
 {
-    x = rand() % 107 + 4;
+    x = rand() % 105 + 4;
+    if (x % 2 == 0)
+        x++;
     y = rand() % 10 + 4;
 }
 void Asteroid::paint()

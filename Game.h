@@ -3,12 +3,14 @@ class Game
     Terminal t;
 
     int points = 0;
-    void clean();
+    int additionalPoints = 0;
 
 public:
     void paintLimits();
     boolean levelUp();
     void gameOver();
+    void addPoints() { additionalPoints += 100; };
+    void clean();
 };
 
 void Game::paintLimits()
@@ -45,6 +47,9 @@ void Game::paintLimits()
 
 void Game::gameOver()
 {
+
+    points += additionalPoints;
+
     clean();
 
     t.gotoxy(20, 5);
@@ -53,7 +58,7 @@ void Game::gameOver()
     printf("%*c( (_-. /(__)\\  )    (  )__)    )(_)(  \\  /  )__)  )   /\n", 20, ' ');
     printf("%*c \\___/(__)(__)(_/\\/\\_)(____)  (_____)  \\/  (____)(_)\\_)\n", 20, ' ');
     t.gotoxy(20, 10);
-    printf("Points: %d", points);
+    printf("Points: %d            Destroyed asteroids: %d", points, additionalPoints / 100);
 }
 
 void Game::clean()
@@ -68,5 +73,5 @@ void Game::clean()
 boolean Game::levelUp()
 {
     points++;
-    return (points % 300 == 0);
+    return (points % 150 == 0);
 }

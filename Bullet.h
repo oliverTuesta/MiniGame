@@ -13,6 +13,8 @@ public:
         y = _y;
     }
 
+    int getX() { return x; }
+    int getY() { return y; }
     boolean move();
 };
 
